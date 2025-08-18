@@ -6,6 +6,8 @@ const PORT = process.env.PORT || 9000;
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+
 
 // Root route to check server status
 app.get('/', (req, res) => {
