@@ -9,7 +9,7 @@ router.get('/', authenticateToken, courseController.getAllCourses);
 
 // Admin-only: Create, Update, Delete course
 router.post('/', authenticateToken, upload.single('image'), courseController.createCourse);
-// router.put('/:id', authenticateToken, upload.single('image'), courseController.updateCourse);
-// router.delete('/:id', authenticateToken, courseController.deleteCourse);
+router.put('/:id', authenticateToken, upload.single('image'), courseController.updateCourse);
+router.delete('/:id', authenticateToken, courseController.deleteCourse);
 
 module.exports = router;

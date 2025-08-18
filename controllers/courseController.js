@@ -1,5 +1,5 @@
 const { Course } = require('../models');
-
+const fs=require('fs');
 // Get all courses
 const getAllCourses = async (req, res) => {
   try {
@@ -99,8 +99,102 @@ const createCourse = async (req, res) => {
   }
 };
 
+// course updating
+const updateCourse = async (req, res) => {
+  try {
+    const course = await Course.findByPk(req.params.id);
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+
+    // Handle new image upload (optional)
+    let imagePath = course.image; // Keep old if not replaced
+    if (req.file) {
+      // Optionally, delete old image file
+      if (course.image && fs.existsSync(course.image)) {
+        fs.unlinkSync(course.image);
+      }
+      imagePath = req.file.path.replace(/\\/g, '/');
+    }
+
+    // Parse array fields
+    let tagsValue = req.body.tags;
+    if (tagsValue && typeof tagsValue === 'string') {
+      try { tagsValue = JSON.parse(tagsValue); } catch (e) { tagsValue = []; }
+    }
+    if (Array.isArray(tagsValue)) {
+      tagsValue = JSON.stringify(tagsValue);
+    }
+
+    let whatYoullLearnValue = req.body.whatYoullLearn;
+    if (whatYoullLearnValue && typeof whatYoullLearnValue === 'string') {
+      try { whatYoullLearnValue = JSON.parse(whatYoullLearnValue); } catch (e) { whatYoullLearnValue = []; }
+    }
+    if (Array.isArray(whatYoullLearnValue)) {
+      whatYoullLearnValue = JSON.stringify(whatYoullLearnValue);
+    }
+
+    // Prepare update data (include all possible fields)
+    const updateData = {
+      title: req.body.title ?? course.title,
+      slug: req.body.slug ?? course.slug,
+      description: req.body.description ?? course.description,
+      image: imagePath,
+      category: req.body.category ?? course.category,
+      tags: tagsValue ?? course.tags,
+      instructor: req.body.instructor ?? course.instructor,
+      duration: req.body.duration ?? course.duration,
+      students: req.body.students ?? course.students,
+      rating: req.body.rating ?? course.rating,
+      udemyLink: req.body.udemyLink ?? course.udemyLink,
+      fullDescription: req.body.fullDescription ?? course.fullDescription,
+      prerequisites: req.body.prerequisites ?? course.prerequisites,
+      level: req.body.level ?? course.level,
+      language: req.body.language ?? course.language,
+      lastUpdated: req.body.lastUpdated ?? course.lastUpdated,
+      certificate: req.body.certificate ?? course.certificate,
+      whatYoullLearn: whatYoullLearnValue ?? course.whatYoullLearn
+    };
+
+    await course.update(updateData);
+
+    // Parse arrays for response
+    const parsedCourse = {
+      ...course.toJSON(),
+      tags: course.tags ? JSON.parse(course.tags) : [],
+      whatYoullLearn: course.whatYoullLearn ? JSON.parse(course.whatYoullLearn) : [],
+    };
+
+    res.json({ message: 'Course updated successfully', course: parsedCourse });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+//delete the course by id 
+const deleteCourse = async (req, res) => {
+  try {
+    const course = await Course.findByPk(req.params.id);
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+
+    // Optionally, delete the course image file
+    if (course.image && fs.existsSync(course.image)) {
+      fs.unlinkSync(course.image);
+    }
+
+    await course.destroy();
+    res.json({ message: 'Course deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
 
 module.exports = {
   getAllCourses,
-  createCourse
+  createCourse,
+  updateCourse,
+  deleteCourse
 };
