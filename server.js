@@ -16,6 +16,12 @@ app.get('/', (req, res) => {
 const adminRoutes = require('./routes/adminRoutes');
 app.use('/api/admin', adminRoutes);
 
+
+const courseRoutes = require('./routes/courseRoutes');
+app.use('/api/courses', courseRoutes);
+
+
+
 // Authenticate database and start server
 sequelize.authenticate()
   .then(() => {

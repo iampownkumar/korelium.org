@@ -39,7 +39,7 @@ module.exports = {
       rating: {
         type: Sequelize.FLOAT
       },
-      videoUrl: {
+      udemyLink: {
         type: Sequelize.STRING
       },
       fullDescription: {

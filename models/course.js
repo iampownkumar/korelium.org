@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     duration: DataTypes.STRING,
     students: DataTypes.INTEGER,
     rating: DataTypes.FLOAT,
-    videoUrl: DataTypes.STRING,
+    udemyLink: DataTypes.STRING,
     fullDescription: DataTypes.TEXT,
     prerequisites: DataTypes.STRING,
     level: DataTypes.STRING,
