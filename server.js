@@ -1,0 +1,29 @@
+const express = require('express');
+const { sequelize } = require('./models'); // Import Sequelize instance
+
+const app = express();
+const PORT = process.env.PORT || 9000;
+
+// Middleware to parse JSON bodies
+app.use(express.json());
+
+// Root route to check server status
+app.get('/', (req, res) => {
+  res.send('Hello, server and database are working!');
+});
+
+// Import and use admin routes
+const adminRoutes = require('./routes/adminRoutes');
+app.use('/api/admin', adminRoutes);
+
+// Authenticate database and start server
+sequelize.authenticate()
+  .then(() => {
+    console.log('Database connection is working!');
+    app.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });
