@@ -3,7 +3,9 @@ const fs=require('fs');
 // Get all courses
 const getAllCourses = async (req, res) => {
   try {
-   const courses = await Course.findAll();
+   const courses = await Course.findAll({
+    limit: 5, // Limit to 10 courses
+   });
 
     const parsedCourses = courses.map(course => {
     return {

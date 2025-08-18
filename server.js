@@ -22,6 +22,8 @@ app.use('/api/admin', adminRoutes);
 const courseRoutes = require('./routes/courseRoutes');
 app.use('/api/courses', courseRoutes);
 
+const publicRoutes = require('./routes/publicRoutes');
+app.use('/public', publicRoutes);
 
 
 // Authenticate database and start server
