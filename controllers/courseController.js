@@ -41,26 +41,59 @@ res.json(parsedCourses);
 // };
 const createCourse = async (req, res) => {
   try {
-    // Get the image file path (if file is uploaded)
     let imagePath = null;
     if (req.file) {
-      imagePath = req.file.path.replace(/\\/g, '/'); // For Windows support
+      imagePath = req.file.path.replace(/\\/g, '/');
     }
 
-    // Prepare data
+    // Parse tags and whatYoullLearn fields properly
+    let tagsValue = req.body.tags;
+    if (tagsValue && typeof tagsValue === 'string') {
+      try { tagsValue = JSON.parse(tagsValue); } catch (e) { tagsValue = []; }
+    }
+    if (Array.isArray(tagsValue)) {
+      tagsValue = JSON.stringify(tagsValue);
+    }
+
+    let whatYoullLearnValue = req.body.whatYoullLearn;
+    if (whatYoullLearnValue && typeof whatYoullLearnValue === 'string') {
+      try { whatYoullLearnValue = JSON.parse(whatYoullLearnValue); } catch (e) { whatYoullLearnValue = []; }
+    }
+    if (Array.isArray(whatYoullLearnValue)) {
+      whatYoullLearnValue = JSON.stringify(whatYoullLearnValue);
+    }
+
     const courseData = {
-      ...req.body,
+      title: req.body.title,
+      slug: req.body.slug,
+      description: req.body.description,
       image: imagePath,
+      category: req.body.category,
+      tags: tagsValue,
+      instructor: req.body.instructor,
+      duration: req.body.duration,
+      students: req.body.students,
+      rating: req.body.rating,
+      udemyLink: req.body.udemyLink,
+      fullDescription: req.body.fullDescription,
+      prerequisites: req.body.prerequisites,
+      level: req.body.level,
+      language: req.body.language,
+      lastUpdated: req.body.lastUpdated,
+      certificate: req.body.certificate,
+      whatYoullLearn: whatYoullLearnValue,
     };
-    if (Array.isArray(req.body.tags)) {
-      courseData.tags = JSON.stringify(req.body.tags);
-    }
-    if (Array.isArray(req.body.whatYoullLearn)) {
-      courseData.whatYoullLearn = JSON.stringify(req.body.whatYoullLearn);
-    }
 
     const course = await Course.create(courseData);
-    res.status(201).json({ message: 'Course created successfully', course });
+
+    // Parse back to array/object for tags and whatYoullLearn in the response
+    const parsedCourse = {
+      ...course.toJSON(),
+      tags: course.tags ? JSON.parse(course.tags) : [],
+      whatYoullLearn: course.whatYoullLearn ? JSON.parse(course.whatYoullLearn) : [],
+    };
+
+    res.status(201).json({ message: 'Course created successfully', course: parsedCourse });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
