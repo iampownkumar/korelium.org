@@ -4,7 +4,7 @@ const fs=require('fs');
 const getAllCourses = async (req, res) => {
   try {
    const courses = await Course.findAll({
-    limit: 5, // Limit to 10 courses
+    limit: 10, // Limit to 10 courses
    });
 
     const parsedCourses = courses.map(course => {
@@ -192,6 +192,7 @@ const deleteCourse = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
 
 
 module.exports = {

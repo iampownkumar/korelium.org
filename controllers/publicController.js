@@ -2,8 +2,18 @@ const { Course } = require('../models');
 
 const getAllCourses = async (req, res) => {
   try {
+    const { category, sortBy = 'createdAt', sortOrder = 'DESC' } = req.query;
+
+    // Build where clause for filtering
+    const whereCondition = category ? { category } : {};
+
+    // Dynamic sort field and order
+    const order = [[sortBy, sortOrder.toUpperCase()]];
+
     const courses = await Course.findAll({
-      limit: 5 // Limit to 5 courses
+      where: whereCondition,
+      order,
+      limit: 10
     });
 
     const parsedCourses = courses.map(course => ({

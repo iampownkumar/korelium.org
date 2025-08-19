@@ -4,6 +4,15 @@ const { sequelize } = require('./models'); // Import Sequelize instance
 const app = express();
 const PORT = process.env.PORT || 9000;
 
+const cors = require('cors');
+app.use(cors());
+// Or for more restricted control:
+app.use(cors({
+  origin: 'http://192.168.10.13:3000', // Use your frontend origin here, change if needed!
+  credentials: true
+}));
+
+
 // Middleware to parse JSON bodies
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));

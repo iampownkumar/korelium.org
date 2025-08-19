@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Main Application Container -->
+    <div id="app">
+        <!-- Navigation Bar - Shows on all pages -->
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-content">
+                    <!-- Logo/Brand -->
+                    <div class="nav-brand">
+                        <a href="#/" class="nav-link">
+                            <h2>LearnHub</h2>
+                        </a>
+                    </div>
+                    
+                    <!-- Navigation Links -->
+                    <ul class="nav-menu">
+                        <li><a href="#/" class="nav-link">Home</a></li>
+                        <li><a href="#/courses" class="nav-link">Courses</a></li>
+                        <li><a href="#/admin" class="nav-link" id="admin-link">Admin Panel</a></li>
+                        <li><button class="btn btn--outline btn--sm" id="auth-btn">Login</button></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area - This will be dynamically updated based on current page -->
+        <main id="main-content">
+            <!-- Content will be injected here by JavaScript -->
+        </main>
+    </div>
+
+    <!-- Modal for Course Details (Hidden by default) -->
+    <div id="course-modal" class="modal hidden">
+        <div class="modal-overlay" id="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Course Details</h3>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Course details will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner (Hidden by default) -->
+    <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Hidden Templates for Dynamic Content -->
+    <!-- These templates will be cloned and populated by JavaScript -->
+    
+    <!-- Home Page Template -->
+    <template id="home-template">
+        <div class="hero-section">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Learn New Skills, Advance Your Career</h1>
+                    <p class="hero-subtitle">Choose from thousands of courses taught by expert instructors</p>
+                    
+                    <!-- Search and Filter Section -->
+                    <div class="search-section">
+                        <div class="search-container">
+                            <input type="text" id="search-input" class="form-control search-input" placeholder="Search courses...">
+                            <button class="btn btn--primary search-btn" id="search-btn">Search</button>
+                        </div>
+                        
+                        <div class="filter-container">
+                            <select id="category-filter" class="form-control">
+                                <option value="">All Categories</option>
+                                <!-- Categories will be populated by JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Featured Courses Section -->
+        <section class="featured-courses">
+            <div class="container">
+                <h2>Featured Courses</h2>
+                <div class="courses-grid" id="featured-courses-grid">
+                    <!-- Course cards will be inserted here -->
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <!-- Courses Page Template -->
+    <template id="courses-template">
+        <div class="page-header">
+            <div class="container">
+                <h1>All Courses</h1>
+                <p>Discover our complete course catalog</p>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <div class="filters-row">
+                    <div class="search-container">
+                        <input type="text" id="courses-search" class="form-control" placeholder="Search courses...">
+                    </div>
+                    <select id="courses-category-filter" class="form-control">
+                        <option value="">All Categories</option>
+                    </select>
+                    <select id="courses-level-filter" class="form-control">
+                        <option value="">All Levels</option>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section">
+                <div class="results-header">
+                    <span id="results-count">0 courses found</span>
+                </div>
+                <div class="courses-grid" id="all-courses-grid">
+                    <!-- Course cards will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Course Detail Template -->
+    <template id="course-detail-template">
+        <div class="course-hero">
+            <div class="container">
+                <div class="course-hero-content">
+                    <div class="course-hero-text">
+                        <h1 id="course-title">Course Title</h1>
+                        <p id="course-description">Course description</p>
+                        <div class="course-meta">
+                            <span class="course-rating">
+                                <span id="course-rating-value">4.5</span> ⭐
+                                (<span id="course-students">100</span> students)
+                            </span>
+                            <span class="course-instructor">By <span id="course-instructor">Instructor</span></span>
+                        </div>
+                    </div>
+                    <div class="course-hero-image">
+                        <img id="course-image" src="" alt="Course Image">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="course-content">
+                <div class="course-main">
+                    <div class="course-section">
+                        <h3>What You'll Learn</h3>
+                        <ul id="what-you-learn-list">
+                            <!-- Learning objectives will be inserted here -->
+                        </ul>
+                    </div>
+
+                    <div class="course-section">
+                        <h3>Prerequisites</h3>
+                        <ul id="prerequisites-list">
+                            <!-- Prerequisites will be inserted here -->
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="course-sidebar">
+                    <div class="course-card">
+                        <div class="price-section">
+                            <span class="price">$<span id="course-price">0</span></span>
+                        </div>
+                        <button class="btn btn--primary btn--full-width" id="enroll-btn">Enroll Now</button>
+                        
+                        <div class="course-info">
+                            <div class="info-item">
+                                <strong>Duration:</strong> <span id="course-duration">0 weeks</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Level:</strong> <span id="course-level">Beginner</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Language:</strong> <span id="course-language">English</span>
+                            </div>
+                        </div>
+
+                        <div class="course-tags" id="course-tags">
+                            <!-- Tags will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Admin Login Template -->
+    <template id="admin-login-template">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2>Admin Login</h2>
+                <form id="admin-login-form">
+                    <div class="form-group">
+                        <label class="form-label" for="username">Username</label>
+                        <input type="text" id="username" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <input type="password" id="password" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn--primary btn--full-width">Login</button>
+                </form>
+                <div id="login-error" class="error-message hidden"></div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Admin Dashboard Template -->
+    <template id="admin-dashboard-template">
+        <div class="page-header">
+            <div class="container">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1>Admin Dashboard</h1>
+                        <p>Manage courses and content</p>
+                    </div>
+                    <button class="btn btn--primary" id="add-course-btn">Add New Course</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <h3 id="total-courses">0</h3>
+                    <p>Total Courses</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="total-students">0</h3>
+                    <p>Total Students</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="total-categories">0</h3>
+                    <p>Categories</p>
+                </div>
+            </div>
+
+            <div class="admin-table-container">
+                <h2>All Courses</h2>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Instructor</th>
+                            <th>Students</th>
+                            <th>Rating</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-courses-table">
+                        <!-- Course rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </template>
+
+    <!-- Course Form Template (Add/Edit) -->
+    <template id="course-form-template">
+        <div class="page-header">
+            <div class="container">
+                <h1 id="form-title">Add New Course</h1>
+            </div>
+        </div>
+
+        <div class="container">
+            <form id="course-form" class="course-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="course-title-input">Course Title *</label>
+                        <input type="text" id="course-title-input" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="course-category-input">Category *</label>
+                        <select id="course-category-input" class="form-control" required>
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="course-description-input">Description *</label>
+                    <textarea id="course-description-input" class="form-control" rows="4" required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="course-instructor-input">Instructor *</label>
+                        <select id="course-instructor-input" class="form-control" required>
+                            <option value="">Select Instructor</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="course-duration-input">Duration *</label>
+                        <input type="text" id="course-duration-input" class="form-control" placeholder="e.g., 8 weeks" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="course-level-input">Level *</label>
+                        <select id="course-level-input" class="form-control" required>
+                            <option value="">Select Level</option>
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                            <option value="Beginner to Intermediate">Beginner to Intermediate</option>
+                            <option value="Beginner to Advanced">Beginner to Advanced</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="course-price-input">Price ($) *</label>
+                        <input type="number" id="course-price-input" class="form-control" min="0" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="course-image-input">Course Image URL</label>
+                        <input type="url" id="course-image-input" class="form-control" placeholder="https://example.com/image.jpg">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="course-language-input">Language</label>
+                        <input type="text" id="course-language-input" class="form-control" value="English">
+                    </div>
+                </div>
+
+                <!-- Dynamic fields for arrays -->
+                <div class="form-group">
+                    <label class="form-label">Tags (one per line)</label>
+                    <textarea id="course-tags-input" class="form-control" rows="3" placeholder="JavaScript&#10;React&#10;Node.js"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Prerequisites (one per line)</label>
+                    <textarea id="course-prerequisites-input" class="form-control" rows="3" placeholder="Basic JavaScript knowledge&#10;HTML/CSS fundamentals"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">What You'll Learn (one per line)</label>
+                    <textarea id="course-learn-input" class="form-control" rows="4" placeholder="Build web applications&#10;Understand React concepts&#10;Deploy to production"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn--outline" id="cancel-form-btn">Cancel</button>
+                    <button type="submit" class="btn btn--primary" id="save-course-btn">Save Course</button>
+                </div>
+            </form>
+        </div>
+    </template>
+
+    <!-- Course Card Template -->
+    <template id="course-card-template">
+        <div class="course-card" data-course-id="">
+            <img class="course-image" src="" alt="Course thumbnail">
+            <div class="course-content">
+                <h3 class="course-title">Course Title</h3>
+                <p class="course-instructor">By Instructor Name</p>
+                <p class="course-description">Course description...</p>
+                <div class="course-meta">
+                    <span class="course-rating">4.5 ⭐</span>
+                    <span class="course-students">100 students</span>
+                    <span class="course-price">$99</span>
+                </div>
+                <div class="course-tags">
+                    <!-- Tags will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
