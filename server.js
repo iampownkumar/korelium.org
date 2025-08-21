@@ -4,11 +4,19 @@ const { sequelize } = require('./models'); // Import Sequelize instance
 const app = express();
 const PORT = process.env.PORT || 9000;
 
-const cors = require('cors');
-app.use(cors());
+// const cors = require('cors');
+// app.use(cors());
 // Or for more restricted control:
+// app.use(cors({
+//   origin: 'http://192.168.10.13:3000', // Use your frontend origin here, change if needed!
+//   credentials: true
+// }));
+
+const cors = require('cors');
 app.use(cors({
-  origin: 'http://192.168.10.13:3000', // Use your frontend origin here, change if needed!
+   origin: 'http://127.0.0.1:5500',
+  // origin: 'http://192.168.10.13:5500', // must exactly match your frontend
+  // origin:'http://localhost:5500',
   credentials: true
 }));
 
@@ -33,6 +41,12 @@ app.use('/api/courses', courseRoutes);
 
 const publicRoutes = require('./routes/publicRoutes');
 app.use('/public', publicRoutes);
+
+
+
+//localadmins
+const localAdminRoutes = require('./routes/localAdminRoutes');
+app.use('/api/localadmins',localAdminRoutes);
 
 
 // Authenticate database and start server
